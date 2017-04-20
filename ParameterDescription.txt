@@ -1,0 +1,9 @@
+ERW Beta	Parameter	Continuous	1e-05	10000	Logarithmic
+ERW Gamma	Parameter	Continuous	0.5	100	Logarithmic
+ERW Max.Iter.	Parameter	Discrete	100	10000	Linear
+SVM C	Parameter	Continuous	0.1	10000	Logarithmic
+SVM Gamma	Parameter	Continuous	1e-11	10	Logarithmic
+SVM Channels	Parameter	Discrete	1	4	Linear
+Mod PCA Components	Parameter	Discrete	1	1	Linear
+Mod Weight	Parameter	Continuous	0	1	Linear
+Mod Distance Functions	Parameter	Categorical	l1,l2,linf,sq,cos,js,kl,cs,em
