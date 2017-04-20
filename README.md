@@ -27,8 +27,8 @@ The different `Mode` values stand for:
 * `Norm` for a normalization of the input
 
 Modes `RW` and `ERW` share the following settings:
-* `OutputFileName` the output file. Currently supported is only the MetaImage format (*.mha / *.mhd)
-* `{InputFileName}` a list of input files; an arbitrary number of files can be specified, currently in either MetaImage (*.mha / *.mhd) or the custom Volume Stack (*.volstack) format. The first parameter that is interpretable as double is considered to be the first from the `AlgorithmParameters` set. Note that svmerw supports both both multimodal and multichannel data. Every input is considered a separate modality; if the input is given as Volume Stack, each volume in that stack is considered one channel of that modality. The total number of input channels is the sum of the number of channels for each modality (each modality can have a different number of channels).
+* `OutputFileName` the output file. Currently supported is only the MetaImage format (\*.mha / \*.mhd)
+* `{InputFileName}` a list of input files; an arbitrary number of files can be specified, currently in either MetaImage (\*.mha / \*.mhd) or the custom Volume Stack (\*.volstack) format (see separate section below). The first parameter that is interpretable as double is considered to be the first from the `AlgorithmParameters` set. Note that svmerw supports both both multimodal and multichannel data. Every input is considered a separate modality; if the input is given as Volume Stack, each volume in that stack is considered one channel of that modality. The total number of input channels is the sum of the number of channels for each modality (each modality can have a different number of channels).
 * `SeedFile` the filename of an XML file with a format like in this example:
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -52,7 +52,7 @@ Optionally, for the ERW pipeline, per Seed a value for each input channel can be
             <Value modality="0" component="0" value="2984"/>
             <Value modality="0" component="1" value="3880"/>
             <Value modality="1" component="0" value="4062"/>
-		</Seed>
+        </Seed>
 ```
 When seeds are specified like this, the ERW pipeline will not use the given x,y,z indices to look values in the input images, instead it will directly consider the values specified.
 
@@ -68,17 +68,17 @@ Note that the RW mode always requires seed coordinates in the given input image 
   These parameters need to be specified for each modality (that is, input file) given.
   * `PCAComponents` is the number of PCA components to consider. Valid values: 1 to the number of channels for that modality.
   * `Weight` the weight given to this particular modality
-  * `DistanceFunction = "l1" | "l2" | "linf" | "sq" | "cos" | "js" | "kl" | "cs" | "em"
+  * `DistanceFunction = "l1" | "l2" | "linf" | "sq" | "cos" | "js" | "kl" | "cs" | "em"`
     determines the distance function used in the extended random walker for that modality:
-	* l1: "Manhatten" / "Taxicab" Distance
-	* l2: Euclidean Distance
-	* linf: L-Infinity Norm (maximum distance of single component)
-	* sq: the original distance function from Random walks (Grady [1]).
-	* cos: cosine similarity (only meaningful for multichannel data)
-	* js: Jensen-Shannon divergence (only meaningful for multichannel data)
-	* kl: Kullback-Leibler divergence (only meaningful for multichannel data)
-	* cs: Chi-Square distance (only meaningful for multichannel data)
-	* em: Earth Mover's Distance
+	* `l1`: "Manhatten" / "Taxicab" Distance
+	* `l2`: Euclidean Distance
+	* `linf`: L-Infinity Norm (maximum distance of single component)
+	* `sq`: the original distance function from Random walks (Grady [1]).
+	* `cos`: cosine similarity (only meaningful for multichannel data)
+	* `js`: Jensen-Shannon divergence (only meaningful for multichannel data)
+	* `kl`: Kullback-Leibler divergence (only meaningful for multichannel data)
+	* `cs`: Chi-Square distance (only meaningful for multichannel data)
+	* `em`: Earth Mover's Distance
 
 	
 ### Mode `ERW`
@@ -91,7 +91,7 @@ Note that the RW mode always requires seed coordinates in the given input image 
   * `ERWMaxIter` limits the number of iterations that are performed during iterative solving of linear equations in the extended random walker, useful values range from 100 to 10000.
   * `SVMC` determines the penalty for misclassification. Smaller values try to maximize the separation, even if it means that more values are misclassified. Values found useful so far range from 0.01 to 10000.
   * `SVMGamma` is the free parameter for the radial basis function used as kernel in SVM. Values found useful so far range from 1e-12 to 10.
-  * `SVMChannels` the number of input channels to consider in the SVM. Should be at least one, and below the number of  input channels over all modalities.
+  * `SVMChannels` is the number of input channels to consider in the SVM. Should be at least one, and below the number of  input channels over all modalities.
 * `ModalityParameters` are defined the same as for `RW` mode
 
 
@@ -124,9 +124,24 @@ To run the ERW pipeline on a simple, single-modality, single-channel dataset, wi
 ### Mode `Normalize`
 
 The only parameter this mode requires is an input directory.
-The (*.mhd) image files starting with "prob" in that directory will be "normalized", that is, in each pixel,
+The (\*.mhd) image files starting with "prob" in that directory will be "normalized", that is, in each pixel,
 a factor is applied such that the sum of the images in that pixel is 1.
 
+
+## Volume Stack Format
+This file format describes a collection of files, it is very simple and best explained with an example:
+```
+file_names_base: stack
+extension: .mhd
+number_of_digits_in_index: 3
+minimum_index: 0
+maximum_index: 199
+```
+
+So it considers each number between `minimum_index` and `maximum_index` (inclusive),
+and pads the number with leading zeros such that it has at least `number_of_digits_in_index`.
+Each number is appended to the `file_names_base`, then `extension` is appended at the end.
+So given above example file, svmerw would load the files `stack001.mhd`, `stack002.mhd`, `stack003.mhd` up to `stack199.mhd`.
 
 ## References
 
