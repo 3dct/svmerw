@@ -63,7 +63,7 @@ void SegmentationRunner::run()
 				m_conn->SetImage(m_modalities->Get(iM)->GetImage());
 
 				typedef itk::GradientAnisotropicDiffusionImageFilter< InputImageType, InputImageType > GGADIFType;
-				typename GGADIFType::Pointer filter = GGADIFType::New();
+				GGADIFType::Pointer filter = GGADIFType::New();
 
 				filter->SetNumberOfIterations(m_param.gad_iter());
 				filter->SetTimeStep(m_param.gad_step());
